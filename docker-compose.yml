@@ -1,0 +1,7 @@
+version: '3.8'
+
+services:
+  backend:
+    build: .
+    ports:
+      - $NODE_LOCAL_PORT:$NODE_DOCKER_PORT

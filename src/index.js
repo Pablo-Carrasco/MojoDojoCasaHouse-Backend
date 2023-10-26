@@ -14,7 +14,7 @@ app.get('/', (req, res) => {
 })
 
 app.get('/ping', async (req, res) => {
-    const result = await pool.query('SELECT NOW()')
+    const result = await pool.query('SELECT * FROM prueba1')
     return res.json(result.rows[0])
 })
 

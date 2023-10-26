@@ -7,7 +7,7 @@
   "scripts": {
     "start": "node ./src/index.js",
     "dev": "node ./src/index.js",
-    "test": "jest",
+    "test": "jest --forceExit",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix"
   },
@@ -22,5 +22,8 @@
     "mysql2": "^3.6.2",
     "pg": "^8.11.3",
     "supertest": "^6.3.3"
+  },
+  "devDependencies": {
+    "eslint": "^8.52.0"
   }
 }

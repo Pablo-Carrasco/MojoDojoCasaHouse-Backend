@@ -1,18 +1,27 @@
 name: Test and Lint
 
 on:
+  push:
+    branches:
+      - main
   pull_request:
-    branches:  
+    branches: 
+      - develop 
       - main 
 
 jobs:
-  test-and-lint:
+  docker:
+    timeout-minutes: 10
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+    - name: Checkout
+      uses: actions/checkout@v3
 
-    - name: Set up Node.js
+    - name: Start containers
+      run: docker-compose -f "docker-compose.yml" up -d --build
+
+    - name: Install node
       uses: actions/setup-node@v3
       with:
         node-version: '18'
@@ -21,7 +30,11 @@ jobs:
       run: npm install
 
     - name: Run tests
-      run: npm test
-    
+      run: npm run test
+
     - name: Run linter
-      run: npm lint
+      run: npm run lint
+
+    - name: Stop containers
+      if: always()
+      run: docker-compose -f "docker-compose.yml" down

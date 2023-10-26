@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 const app = require('./index.js');
 const request = require('supertest');
 

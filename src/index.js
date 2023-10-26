@@ -4,7 +4,7 @@ import { config } from "dotenv";
 config()
 
 const app = express()
-new pg.Pool({
+const pool = new pg.Pool({
     connectionString: process.env.PSQL_DATABASE_URL,
     // ssl: true
 })

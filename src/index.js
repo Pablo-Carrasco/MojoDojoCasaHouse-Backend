@@ -7,7 +7,7 @@ require('dotenv').config();
 const app = express()
 const pool = new pg.Pool({
     connectionString: process.env.PSQL_DATABASE_URL,
-    ssl: true
+    //ssl: true
 })
 
 app.get('/', (req, res) => {

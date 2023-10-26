@@ -7,15 +7,15 @@ require('dotenv').config();
 const app = express()
 const pool = new pg.Pool({
     connectionString: process.env.PSQL_DATABASE_URL,
-    // ssl: true
+    ssl: true
 })
 
 app.get('/', (req, res) => {
-    res.send('Holaa Mundo de Desarrollo de Software!')
+    res.send('Holaa Mundo esta es una demo!')
 })
 
-app.get('/ping', async (req, res) => {
-    const result = await pool.query('SELECT * FROM prueba1')
+app.get('/cinemas', async (req, res) => {
+    const result = await pool.query('SELECT name, ST_AsText(location) FROM cinemas')
     return res.json(result.rows)
 })
 

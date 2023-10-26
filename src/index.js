@@ -5,7 +5,7 @@ config()
 const app = express()
 
 app.get('/', (req, res) => {
-    res.send('Hello World!')
+    res.send('Holaa Mundo!')
 })
 
 app.listen(process.env.NODE_DOCKER_PORT)

@@ -4,4 +4,4 @@ services:
   backend:
     build: .
     ports:
-      - $NODE_LOCAL_PORT:$NODE_DOCKER_PORT
+      - 3000:3000

@@ -1,12 +1,7 @@
-// import express from "express"
-// import pg from "pg"
-// import { config } from "dotenv";
 const express = require('express');
 const pg = require('pg');
 
 require('dotenv').config();
-
-// config()
 
 const app = express()
 const pool = new pg.Pool({

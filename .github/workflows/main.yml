@@ -3,11 +3,11 @@ name: Test and Lint
 on:
   push:
     branches:
-      - main
+      - master
   pull_request:
     branches: 
       - develop 
-      - main 
+      - master 
 
 jobs:
   docker:

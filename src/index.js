@@ -5,9 +5,15 @@ const pg = require('pg');
 require('dotenv').config();
 
 const app = express()
+
+const environment = process.env.NODE_ENV || 'development'
+
+const databaseUrl =  environment === 'production'
+                    ? process.env.PSQL_DATABASE_URL
+                    : `postgresql://${process.env.PSQL_DB_USER}:${process.env.PSQL_DB_PASSWORD}@${process.env.PSQL_DB_HOST}:${process.env.PSQL_DB_PORT}/${process.env.PSQL_DB_NAME}`
+
 const pool = new pg.Pool({
-    connectionString: process.env.PSQL_DATABASE_URL,
-    //ssl: true
+    connectionString: databaseUrl
 })
 
 app.get('/', (req, res) => {

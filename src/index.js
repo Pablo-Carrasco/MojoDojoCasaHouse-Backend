@@ -1,12 +1,14 @@
 /* eslint-disable no-undef */
 const express = require('express');
 const pg = require('pg');
+pg.defaults.ssl = true;
 
 const { sq } = require("../src/config/db");
+
 const { DataTypes } = require("sequelize");
 
-const Cinema = require("../src/models/cinema")(sq, DataTypes);
-console.log(Cinema)
+const Cinemas = require("../src/models/cinema")(sq, DataTypes);
+
 
 require('dotenv').config();
 
@@ -22,8 +24,8 @@ app.get('/', (req, res) => {
 
 app.get('/cinemas', async (req, res) => {
     //const result = await pool.query('SELECT name, ST_AsText(location) FROM cinemas')
-    const cinemas = await Cinema.findAll();
-    return cinemas
+    const cinemas = await Cinemas.findAll();
+    res.send(cinemas)
 })
 
 app.listen(process.env.NODE_DOCKER_PORT)

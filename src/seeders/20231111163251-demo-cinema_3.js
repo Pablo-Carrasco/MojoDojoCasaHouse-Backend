@@ -5,8 +5,8 @@
 module.exports = {
   up: (queryInterface, Sequelize) => {
     return queryInterface.bulkInsert('Cinemas', [{
-      name: 'Cinemark Alto Las Condes',
-      location: Sequelize.fn('ST_GeomFromText', 'POINT(-33.3911981 -70.5475219)'),
+      name: 'Cineplanet La Dehesa',
+      location: Sequelize.fn('ST_GeomFromText', 'POINT(-33.3568727 -70.5169774)'),
       createdAt: new Date(),
       updatedAt: new Date()
     }]);

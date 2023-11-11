@@ -18,7 +18,10 @@ module.exports = (sequelize, DataTypes) => {
     location: DataTypes.GEOMETRY('POINT')
   }, {
     sequelize,
-    modelName: 'Cinema',
+    modelName: 'Cinemas',
   });
-  return Cinema
+  Cinema.sync().then(() => {
+  console.log("Cinema Model synced");
+});
+  return Cinema;
 };

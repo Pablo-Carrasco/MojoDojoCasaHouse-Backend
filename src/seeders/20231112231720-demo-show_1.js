@@ -11,7 +11,8 @@ module.exports = {
       link_to_picture: "aaalink2",
       id_cinema: 1,
       createdAt: new Date(),
-      updatedAt: new Date()
+      updatedAt: new Date(),
+      date: new Date("2023-11-13")
     }]);
   },
   down: (queryInterface, Sequelize) => {

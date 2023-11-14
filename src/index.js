@@ -23,6 +23,7 @@ app.use(cors({
   credentials: true, // Habilita el envío de cookies y otros credenciales
 }));
 
+app.use(express.json());
 
 app.get('/', (req, res) => {
     res.send('Hola mundo esto es una demo!')
@@ -48,6 +49,25 @@ app.get('/cinemas', async (req, res) => {
     //const result = await pool.query('SELECT name, ST_AsText(location) FROM cinemas')
     const cinemas = await db["Cinema"].findAll({ include: ["shows"]});
     res.send(cinemas)
+})
+
+app.post('/search', (req, res) => {
+  const movie_name = req.body.movie;
+  const date = new Date(req.body.date);
+  var point;
+
+  const split_location = req.body.location.split(",");
+  var coord_x = parseFloat(split_location[0].replace('Latitude: ',''));
+  var coord_y = parseFloat(split_location[1].replace('Longitude: ',''));
+  point = { type: 'Point', coordinates: [coord_x,coord_y] };
+  console.log(point);
+  console.log(date);
+  console.log(movie_name);
+
+  //TODO: 
+  // - filtrar cines por cercanía -> pancho
+  // - filtrar shows que tengan name == movie_name
+  // - devolver como json los shows filtrados
 })
 
 app.listen(process.env.NODE_DOCKER_PORT)

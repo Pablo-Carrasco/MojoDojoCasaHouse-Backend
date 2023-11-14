@@ -21,7 +21,8 @@ module.exports = (sequelize, DataTypes) => {
     schedule: DataTypes.TIME,
     link_to_show: DataTypes.TEXT,
     link_to_picture: DataTypes.TEXT,
-    id_cinema: DataTypes.INTEGER
+    id_cinema: DataTypes.INTEGER,
+    date: DataTypes.DATE
   }, {
     sequelize,
     modelName: 'Show',

@@ -52,8 +52,8 @@ class DistanceCalculationsModule {
     var R = 6371; // km
     var dLat = this.#turnToRadian(lat2 - lat1);
     var dLon = this.#turnToRadian(lon2 - lon1);
-    var lat1 = this.#turnToRadian(lat1);
-    var lat2 = this.#turnToRadian(lat2);
+    lat1 = this.#turnToRadian(lat1);
+    lat2 = this.#turnToRadian(lat2);
 
     var a =
       Math.sin(dLat / 2) * Math.sin(dLat / 2) +

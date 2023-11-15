@@ -8,6 +8,8 @@ on:
     branches: 
       - develop 
       - master 
+env:
+  PSQL_DATABASE_URL_DEVELOPMENT: ${{ secrets.PSQL_DATABASE_URL_DEVELOPMENT }}
 
 jobs:
   docker:

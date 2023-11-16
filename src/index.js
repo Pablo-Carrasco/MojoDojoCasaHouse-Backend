@@ -8,7 +8,7 @@ const db = require("../src/config/db.js")
 
 const { DataTypes } = require("sequelize");
 
-//const Cinemas = require("../src/models/cinema")(sq, DataTypes);
+const DistanceCalculationsModule = require("./distanceCalculationsModule/distanceCalculationsModule.js");
 
 require('dotenv').config();
 
@@ -58,23 +58,39 @@ app.get('/cinemas', async (req, res) => {
     res.send(cinemas)
 })
 
-app.post('/search', (req, res) => {
+app.post('/search', async (req, res) => {
   const movie_name = req.body.movie;
-  const date = new Date(req.body.date);
+  const movie_date = new Date(req.body.date);
   var point;
 
   const split_location = req.body.location.split(",");
   var coord_x = parseFloat(split_location[0].replace('Latitude: ',''));
   var coord_y = parseFloat(split_location[1].replace('Longitude: ',''));
   point = { type: 'Point', coordinates: [coord_x,coord_y] };
-  console.log(point);
-  console.log(date);
-  console.log(movie_name);
 
-  //TODO: 
-  // - filtrar cines por cercanía -> pancho
-  // - filtrar shows que tengan name == movie_name
-  // - devolver como json los shows filtrados
+  const allCinemas = await db["Cinema"].findAll({ include: ["shows"]});
+  const allShowsWithMovie = await db["Show"].findAll({
+     include: ["cinema"],
+     where: {
+      title: movie_name,
+      date: movie_date
+     }
+    });
+
+    var closeCinemas = new DistanceCalculationsModule().getNearbyCinemas(point, allCinemas);
+    const idCinemasThatHaveMovie = [];
+    closeCinemas.forEach((element) => idCinemasThatHaveMovie.push(element.id));
+    const returnList = [];
+
+    allShowsWithMovie.forEach( 
+    (show) => { 
+      if (idCinemasThatHaveMovie.includes(show.cinema.id)){
+        returnList.push(show.cinema);
+     }
+    }
+  );
+
+  res.send(returnList)
 })
 
 app.listen(process.env.NODE_DOCKER_PORT)

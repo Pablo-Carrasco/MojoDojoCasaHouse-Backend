@@ -61,6 +61,8 @@ app.get('/cinemas', async (req, res) => {
 app.post('/search', async (req, res) => {
   const movie_name = req.body.movie;
   const movie_date = new Date(req.body.date);
+  movie_date.setHours(0, 0, 0, 0);
+  movie_date.setUTCHours(0);
   var point;
 
   const split_location = req.body.location.split(",");

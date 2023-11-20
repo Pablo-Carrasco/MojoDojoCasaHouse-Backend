@@ -92,7 +92,7 @@ app.post('/search', async (req, res) => {
     }
   );
 
-  res.send(returnList)
+  res.send([returnList, movie_name])
 })
 
 app.listen(process.env.NODE_DOCKER_PORT)

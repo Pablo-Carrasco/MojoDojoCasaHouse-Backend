@@ -8,7 +8,7 @@ const db = require("../src/config/db.js")
 
 const { DataTypes } = require("sequelize");
 
-//const Cinemas = require("../src/models/cinema")(sq, DataTypes);
+const DistanceCalculationsModule = require("./distanceCalculationsModule/distanceCalculationsModule.js");
 
 require('dotenv').config();
 
@@ -30,6 +30,7 @@ app.use(cors({
   credentials: true, // Habilita el envío de cookies y otros credenciales
 }));
 
+app.use(express.json());
 
 app.get('/', (req, res) => {
     res.send('Hola mundo esto es una demo!')
@@ -55,6 +56,43 @@ app.get('/cinemas', async (req, res) => {
     //const result = await pool.query('SELECT name, ST_AsText(location) FROM cinemas')
     const cinemas = await db["Cinema"].findAll({ include: ["shows"]});
     res.send(cinemas)
+})
+
+app.post('/search', async (req, res) => {
+  const movie_name = req.body.movie;
+  const movie_date = new Date(req.body.date);
+  movie_date.setHours(0, 0, 0, 0);
+  movie_date.setUTCHours(0);
+  var point;
+
+  const split_location = req.body.location.split(",");
+  var coord_x = parseFloat(split_location[0].replace('Latitude: ',''));
+  var coord_y = parseFloat(split_location[1].replace('Longitude: ',''));
+  point = { type: 'Point', coordinates: [coord_x,coord_y] };
+
+  const allCinemas = await db["Cinema"].findAll({ include: ["shows"]});
+  const allShowsWithMovie = await db["Show"].findAll({
+     include: ["cinema"],
+     where: {
+      title: movie_name,
+      date: movie_date
+     }
+    });
+
+    var closeCinemas = new DistanceCalculationsModule().getNearbyCinemas(point, allCinemas);
+    const idCinemasThatHaveMovie = [];
+    closeCinemas.forEach((element) => idCinemasThatHaveMovie.push(element.id));
+    const returnList = [];
+
+    allShowsWithMovie.forEach( 
+    (show) => { 
+      if (idCinemasThatHaveMovie.includes(show.cinema.id)){
+        returnList.push(show.cinema);
+     }
+    }
+  );
+
+  res.send([returnList, movie_name])
 })
 
 app.listen(process.env.NODE_DOCKER_PORT)

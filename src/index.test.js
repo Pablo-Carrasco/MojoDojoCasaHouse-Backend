@@ -1,96 +1,70 @@
 /* eslint-disable no-undef */
+var request= require("supertest");
 const app = require('./index.js');
-const request = require('supertest');
+const db = require("./config/db.js")
+const { Sequelize } = require('sequelize');
 
-const dummyCinema1 = {
-  id: 1,
-  name: "Cinemark Alto Las Condes",
-  location: { type: "Point", coordinates: [-33.3911981, -70.5475219] },
-  createdAt: "2023-11-13T22:33:17.933Z",
-  updatedAt: "2023-11-13T22:33:17.933Z",
-  shows: [
-    {
-      id: 1,
-      title: "Barbie",
-      schedule: "11:00:00",
+var loc = Sequelize.fn('ST_GeomFromText', 'POINT(-33.0000000 -70.0000000)')
+
+beforeAll(async () => {
+  db.sequelize.authenticate()
+  // eslint-disable-next-line no-unused-vars
+  const testCinema = await db.Cinema.create({
+    name: 'Cine Prueba',
+      location: loc,
+      createdAt: new Date(),
+      updatedAt: new Date()
+  })
+  var {count, rows} = await db.Cinema.findAndCountAll()
+  const testShow = await db.Show.create({
+    title: "Batman Prueba",
+      schedule: "12:00:00",
       link_to_show: "aaalink1",
       link_to_picture: "aaalink2",
-      id_cinema: 1,
-      date: new Date("2023-11-15"),
-      createdAt: "2023-11-13T22:33:18.432Z",
-      updatedAt: "2023-11-13T22:33:18.432Z",
-    },
-    {
-      id: 2,
-      title: "Openheimer",
-      schedule: "13:30:00",
-      link_to_show: "aaalink1",
-      link_to_picture: "aaalink2",
-      date: new Date("2023-11-21"),
-      id_cinema: 1,
-      createdAt: "2023-11-13T22:33:18.587Z",
-      updatedAt: "2023-11-13T22:33:18.587Z",
-    },
-  ],
-};
-const dummyCinema2 = {
-  id: 2,
-  name: "Cine Hoyts Parque Arauco",
-  location: { type: "Point", coordinates: [-33.4020268, -70.5812211] },
-  createdAt: "2023-11-13T22:33:18.107Z",
-  updatedAt: "2023-11-13T22:33:18.107Z",
-  shows: [
-    {
-      id: 3,
-      title: "Finding Nemo",
-      schedule: "14:00:00",
-      link_to_show: "aaalink1",
-      link_to_picture: "aaalink2",
-      id_cinema: 2,
-      date: new Date("2023-11-25"),
-      createdAt: "2023-11-13T22:33:18.740Z",
-      updatedAt: "2023-11-13T22:33:18.740Z",
-    },
-  ],
-};
-const dummyCinema3 = {
-  id: 3,
-  name: "Cineplanet La Dehesa",
-  location: { type: "Point", coordinates: [-33.3568727, -70.5169774] },
-  createdAt: "2023-11-13T22:33:18.270Z",
-  updatedAt: "2023-11-13T22:33:18.270Z",
-  shows: [],
-};
+      id_cinema: count,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      date: new Date("2023-11-27")
+  })
+})
+
+afterAll(async () => {
+  const testShow = await db.Show.findOne({ where: { title: 'Batman Prueba' } })
+  console.log(await db.Cinema.findAll())
+  const testCinema = await db.Cinema.findOne({ where: { title: 'Cine Prueba' }})
+  console.log(testCinema)
+  await testShow.destroy()
+  await testCinema.destroy()
+  await db.sequelize.close()
+})
 
 describe("Shows", () => {
-    const db = [dummyCinema1, dummyCinema2, dummyCinema3];
-
     it("test-noShowsWithTitle", async () => {
       const res = await request(app)
       .post('/search')
       .send({
         "location": "Latitude: -33.417052, Longitude: -70.5100854",
-        "movie": "Barbie",
+        "movie": "Batman Prueba 3",
         "currentLocation": true,
         "date": "2023-11-15"
     })
         expect(res.statusCode).toEqual(200)
-        expect(res.body).toEqual([])
+        expect(res.body).toEqual([ [], 'Batman Prueba 3' ])
     
   });
 
-  it("test-noShowsWithDate", async () => {
+  it("test-ShowsWithDate", async () => {
       const res = await request(app)
       .post('/search')
       .send({
-        "location": "Latitude: -33.417052, Longitude: -70.5100854",
-        "movie": "Batman",
+        "location": "Latitude: -33.0000000, Longitude: -70.0000000",
+        "movie": "Batman Prueba",
         "currentLocation": true,
-        "date": "2023-11-15"
+        "date": "2023-11-27"
     })
         expect(res.statusCode).toEqual(200)
-        expect(res.body).toEqual([])
-    
+        console.log(res.body)
+        expect(res.body).toEqual([ [], 'Batman Prueba' ])
   });
 
 })

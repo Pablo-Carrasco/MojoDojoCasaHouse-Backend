@@ -1,24 +1,25 @@
 /* eslint-disable no-undef */
-const express = require('express');
-const cors = require('cors');
-const pg = require('pg');
+const express = require("express");
+const cors = require("cors");
+const pg = require("pg");
 pg.defaults.ssl = true;
 
-const db = require("../src/config/db.js")
+const db = require("../src/config/db.js");
 
 const { DataTypes } = require("sequelize");
 
 const DistanceCalculationsModule = require("./distanceCalculationsModule/distanceCalculationsModule.js");
 
-require('dotenv').config();
+require("dotenv").config();
 
-const app = express()
+const app = express();
 
-const environment = process.env.NODE_ENV || 'development'
+const environment = process.env.NODE_ENV || "development";
 
-const databaseUrl =  environment === 'production'
-                    ? process.env.PSQL_DATABASE_URL
-                    : `postgresql://${process.env.PSQL_DB_USER}:${process.env.PSQL_DB_PASSWORD}@${process.env.PSQL_DB_HOST}:${process.env.PSQL_DB_PORT}/${process.env.PSQL_DB_NAME}`
+const databaseUrl =
+  environment === "production"
+    ? process.env.PSQL_DATABASE_URL
+    : `postgresql://${process.env.PSQL_DB_USER}:${process.env.PSQL_DB_PASSWORD}@${process.env.PSQL_DB_HOST}:${process.env.PSQL_DB_PORT}/${process.env.PSQL_DB_NAME}`;
 
 const pool = new pg.Pool({
     connectionString: process.env.PSQL_DATABASE_URL,
@@ -52,11 +53,17 @@ app.get('/movies', async (req, res) => {
     }
   });
 
-app.get('/cinemas', async (req, res) => {
-    //const result = await pool.query('SELECT name, ST_AsText(location) FROM cinemas')
-    const cinemas = await db["Cinema"].findAll({ include: ["shows"]});
-    res.send(cinemas)
-})
+app.get("/cinemas", async (req, res) => {
+  //const result = await pool.query('SELECT name, ST_AsText(location) FROM cinemas')
+  const cinemas = await db["Cinema"].findAll();
+  res.send(cinemas);
+});
+
+app.get("/shows", async (req, res) => {
+  //const result = await pool.query('SELECT name, ST_AsText(location) FROM cinemas')
+  const shows = await db["Show"].findAll();
+  res.send(shows);
+});
 
 app.post('/search', async (req, res) => {
   const movie_name = req.body.movie;

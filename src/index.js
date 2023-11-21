@@ -83,16 +83,18 @@ app.post('/search', async (req, res) => {
     const idCinemasThatHaveMovie = [];
     closeCinemas.forEach((element) => idCinemasThatHaveMovie.push(element.id));
     const returnList = [];
-
+    const addedCinemaIds = new Set();
+  
     allShowsWithMovie.forEach( 
-    (show) => { 
-      if (idCinemasThatHaveMovie.includes(show.cinema.id)){
-        returnList.push(show.cinema);
-     }
-    }
-  );
-
-  res.send([returnList, movie_name])
+      (show) => { 
+        if (idCinemasThatHaveMovie.includes(show.cinema.id) && !addedCinemaIds.has(show.cinema.id)){
+          returnList.push(show.cinema);
+          addedCinemaIds.add(show.cinema.id);
+        }
+      }
+    );
+  
+    res.send([returnList, movie_name])
 })
 
 app.listen(process.env.NODE_DOCKER_PORT)

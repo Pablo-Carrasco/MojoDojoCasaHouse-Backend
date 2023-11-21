@@ -1,24 +1,25 @@
 /* eslint-disable no-undef */
-const express = require('express');
-const cors = require('cors');
-const pg = require('pg');
+const express = require("express");
+const cors = require("cors");
+const pg = require("pg");
 pg.defaults.ssl = true;
 
-const db = require("../src/config/db.js")
+const db = require("../src/config/db.js");
 
 const { DataTypes } = require("sequelize");
 
 const DistanceCalculationsModule = require("./distanceCalculationsModule/distanceCalculationsModule.js");
 
-require('dotenv').config();
+require("dotenv").config();
 
-const app = express()
+const app = express();
 
-const environment = process.env.NODE_ENV || 'development'
+const environment = process.env.NODE_ENV || "development";
 
-const databaseUrl =  environment === 'production'
-                    ? process.env.PSQL_DATABASE_URL
-                    : `postgresql://${process.env.PSQL_DB_USER}:${process.env.PSQL_DB_PASSWORD}@${process.env.PSQL_DB_HOST}:${process.env.PSQL_DB_PORT}/${process.env.PSQL_DB_NAME}`
+const databaseUrl =
+  environment === "production"
+    ? process.env.PSQL_DATABASE_URL
+    : `postgresql://${process.env.PSQL_DB_USER}:${process.env.PSQL_DB_PASSWORD}@${process.env.PSQL_DB_HOST}:${process.env.PSQL_DB_PORT}/${process.env.PSQL_DB_NAME}`;
 
 const pool = new pg.Pool({
     connectionString: process.env.PSQL_DATABASE_URL,
@@ -52,11 +53,17 @@ app.get('/movies', async (req, res) => {
     }
   });
 
-app.get('/cinemas', async (req, res) => {
-    //const result = await pool.query('SELECT name, ST_AsText(location) FROM cinemas')
-    const cinemas = await db["Cinema"].findAll({ include: ["shows"]});
-    res.send(cinemas)
-})
+app.get("/cinemas", async (req, res) => {
+  //const result = await pool.query('SELECT name, ST_AsText(location) FROM cinemas')
+  const cinemas = await db["Cinema"].findAll();
+  res.send(cinemas);
+});
+
+app.get("/shows", async (req, res) => {
+  //const result = await pool.query('SELECT name, ST_AsText(location) FROM cinemas')
+  const shows = await db["Show"].findAll();
+  res.send(shows);
+});
 
 app.post('/search', async (req, res) => {
   const movie_name = req.body.movie;
@@ -83,16 +90,60 @@ app.post('/search', async (req, res) => {
     const idCinemasThatHaveMovie = [];
     closeCinemas.forEach((element) => idCinemasThatHaveMovie.push(element.id));
     const returnList = [];
-
+    const addedCinemaIds = new Set();
+  
     allShowsWithMovie.forEach( 
-    (show) => { 
-      if (idCinemasThatHaveMovie.includes(show.cinema.id)){
-        returnList.push(show.cinema);
-     }
-    }
-  );
+      (show) => { 
+        if (idCinemasThatHaveMovie.includes(show.cinema.id) && !addedCinemaIds.has(show.cinema.id)){
+          returnList.push(show.cinema);
+          addedCinemaIds.add(show.cinema.id);
+        }
+      }
+    );
+  
+    res.send([returnList, movie_name])
+})
 
-  res.send([returnList, movie_name])
+app.post('/movieInfo', async(req, res) => {
+  const cinema_id = req.body.cinema_id;
+  const movie_title = req.body.movie_title;
+
+  const complete_cinema_information = await db["Cinema"].findAll({
+    include: ["shows"],
+    where: {
+      id: cinema_id
+    }
+  });
+
+  let shows_in_cinema = [];
+
+ const movies_in_cinema = complete_cinema_information[0].shows
+  
+  movies_in_cinema.forEach(
+    (show) => {
+      if (show.title == movie_title){
+        shows_in_cinema.push(show)
+      }
+    }
+  )
+
+  try {
+    const cinema_information = await db["Cinema"].findAll({
+      where: {
+        id: cinema_id
+      }
+    });
+
+    let final_information = {}
+    final_information['cinema'] = cinema_information[0]
+    final_information['shows'] = shows_in_cinema
+
+    res.send(final_information)
+
+  } catch (error) {
+    console.error('Error al la informacion de un cine y pelicula dada', error);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
 })
 
 app.listen(process.env.NODE_DOCKER_PORT)

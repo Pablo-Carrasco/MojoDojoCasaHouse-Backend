@@ -119,25 +119,6 @@ app.post('/movieInfo', async(req, res) => {
   )
 
   try {
-    let show_per_date = {}
-
-    shows_in_cinema.forEach(
-      (show) => {
-        if(show.date in show_per_date){
-          show_per_date[show.date].push(show.schedule);
-        }
-        else{
-          show_per_date[show.date] = [show.schedule];
-        }
-      }
-    )
-
-    let final_show_information = {}
-    final_show_information['title'] = movie_title
-    final_show_information['link_to_show'] = shows_in_cinema[0].link_to_show
-    final_show_information['link_to_picture'] = shows_in_cinema[0].link_to_picture
-    final_show_information['dates_dict'] = show_per_date
-      
     const cinema_information = await db["Cinema"].findAll({
       where: {
         id: cinema_id
@@ -146,7 +127,7 @@ app.post('/movieInfo', async(req, res) => {
 
     let final_information = {}
     final_information['cinema'] = cinema_information[0]
-    final_information['show'] = final_show_information
+    final_information['shows'] = shows_in_cinema
 
     res.send(final_information)
 

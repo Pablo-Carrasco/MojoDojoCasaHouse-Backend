@@ -104,6 +104,48 @@ app.post('/search', async (req, res) => {
     res.send([returnList, movie_name])
 })
 
+app.post('/movieInfo', async(req, res) => {
+  const cinema_id = req.body.cinema_id;
+  const movie_title = req.body.movie_title;
+
+  const complete_cinema_information = await db["Cinema"].findAll({
+    include: ["shows"],
+    where: {
+      id: cinema_id
+    }
+  });
+
+  let shows_in_cinema = [];
+
+ const movies_in_cinema = complete_cinema_information[0].shows
+  
+  movies_in_cinema.forEach(
+    (show) => {
+      if (show.title == movie_title){
+        shows_in_cinema.push(show)
+      }
+    }
+  )
+
+  try {
+    const cinema_information = await db["Cinema"].findAll({
+      where: {
+        id: cinema_id
+      }
+    });
+
+    let final_information = {}
+    final_information['cinema'] = cinema_information[0]
+    final_information['shows'] = shows_in_cinema
+
+    res.send(final_information)
+
+  } catch (error) {
+    console.error('Error al la informacion de un cine y pelicula dada', error);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
+})
+
 app.listen(process.env.NODE_DOCKER_PORT)
 console.log('Server on Port', process.env.NODE_LOCAL_PORT)
 

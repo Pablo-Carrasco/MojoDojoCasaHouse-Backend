@@ -60,6 +60,8 @@ app.post('/api/scrape', async (req, res) => {
       // Paso 1: Obtener la lista de cines
       const { data: cinemasList } = await axios.get(`http://localhost:3000/api/cinemas/`);
 
+      //Implementar eliminar los datos de show en este punto antes de volver a correr los scrapers
+
       const scraperPromises = cinemasList.map(cinema =>
         new Promise((resolve, reject) => {
             const arrayCinemaName = cinema[1].split(' ');
@@ -94,7 +96,18 @@ app.post('/api/scrape', async (req, res) => {
   
       console.log(movieData);
       //Implementar la lógica para insertar los datos de la película en la base de datos
-
+      await db["Show"].bulkCreate(movieData);
+    //   movieData.map(async (movie) => {
+    //     await db["Show"].create({
+    //         title: movie.title,
+    //         schedule: movie.schedule,
+    //         link_to_show: movie.link_to_show,
+    //         link_to_picture: movie.link_to_picture,
+    //         id_cinema: movie.id_cinema,
+    //         date: new Date(movie.date),
+    //     });
+    //   });
+    
       
       res.send('Datos de la película recibidos y almacenados correctamente');
     } catch (error) {

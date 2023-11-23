@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
+var request= require("supertest");
 const app = require('./index.js');
-const request = require('supertest');
 const db = require("./config/db.js")
 const { Sequelize } = require('sequelize');
 
@@ -32,6 +32,7 @@ beforeAll(async () => {
       updatedAt: new Date(),
       date: new Date("2023-11-27")
   })
+
 
   var testCinema7 = null
   try{
@@ -85,10 +86,12 @@ beforeAll(async () => {
       updatedAt: new Date(),
       date: new Date("2023-11-29")
   })
+
 })
 
 afterAll(async () => {
   const testShow = await db.Show.findOne({ where: { title: 'Batman Prueba' } })
+
   const testShow9 = await db.Show.findOne({ where: { title: 'Batman Prueba' } })
   const testShow2 = await db.Show.findOne({ where: { title: 'Joker Prueba', schedule: '17:00:00' } })
   const testShow3 = await db.Show.findOne({ where: { title: 'Joker Prueba', schedule: '14:00:00' } })
@@ -101,9 +104,11 @@ afterAll(async () => {
   await testShow2.destroy()
   await testShow3.destroy()
   await testShow4.destroy()
+
   await testCinema.destroy()
   await db.sequelize.close()
 })
+
 
 describe("Movies", () => {
     it("shows the 3 shows created in that cinema", async () => {
@@ -133,6 +138,54 @@ describe('GET /movies', () => {
     expect(check).toEqual(false)
   });
 });
+
+
+describe("Shows", () => {
+    it("test-noShowsWithTitle", async () => {
+      const res = await request(app)
+      .post('/search')
+      .send({
+        "location": "Latitude: -33.417052, Longitude: -70.5100854",
+        "movie": "Batman Prueba 3",
+        "currentLocation": true,
+        "date": "2023-11-28"
+    })
+        expect(res.statusCode).toEqual(200)
+        expect(res.body).toEqual([ [], 'Batman Prueba 3' ])
+    
+  });
+
+  it("test-ShowsWithDate", async () => {
+      const res = await request(app)
+      .post('/search')
+      .send({
+        "location": "Latitude: -33.0000000, Longitude: -70.0000000",
+        "movie": "Batman Prueba",
+        "currentLocation": true,
+        "date": "2023-11-27"
+    })
+        expect(res.statusCode).toEqual(200)
+        var json = JSON.parse(JSON.stringify(res.body[0]))
+        expect(res.body[1]).toEqual('Batman Prueba')
+        console.log(json[0])
+        expect(json[0].name).toEqual('Cine Prueba') 
+  });
+  it("test-NoShowsWithDate", async () => {
+      const res = await request(app)
+      .post('/search')
+      .send({
+        "location": "Latitude: -33.0000000, Longitude: -70.0000000",
+        "movie": "Batman Prueba",
+        "currentLocation": true,
+        "date": "2023-11-15"
+    })
+        expect(res.statusCode).toEqual(200)
+        var json = JSON.parse(JSON.stringify(res.body[0]))
+        expect(res.body[1]).toEqual('Batman Prueba')
+        expect(res.body[0]).toEqual([])
+  });
+
+})
 
 
 describe('GET /', () => {

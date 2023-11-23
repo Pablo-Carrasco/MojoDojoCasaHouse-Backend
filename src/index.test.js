@@ -1,14 +1,12 @@
-/* eslint-disable no-undef */
-var request= require("supertest");
-const app = require('./index.js');
+var request = require("supertest");
+require('dotenv').config();
+const app = require('./app');
 const db = require("./config/db.js")
 const { Sequelize } = require('sequelize');
 
 var loc = Sequelize.fn('ST_GeomFromText', 'POINT(-33.0000000 -70.0000000)')
 
 beforeAll(async () => {
-  db.sequelize.authenticate()
-  // eslint-disable-next-line no-unused-vars
   var testCinema = null
   try{
     testCinema = await db.Cinema.create({
@@ -90,24 +88,30 @@ beforeAll(async () => {
 })
 
 afterAll(async () => {
-  const testShow = await db.Show.findOne({ where: { title: 'Batman Prueba' } })
+  try {
+    console.log('Deleting data...');
+    await Promise.all([
+      db.Cinema.destroy({
+        where: {
+          name: {
+            [db.Sequelize.Op.or]: ['Cine Prueba', 'Cine Prueba 2']
+          }
+        }
+      }),
+      db.Show.destroy({
+        where: {
+          title: {
+            [db.Sequelize.Op.or]: ['Batman Prueba', 'Joker Prueba']
+          }
+        }
+      })
+    ]);
+    await db.sequelize.close();
 
-  const testShow9 = await db.Show.findOne({ where: { title: 'Batman Prueba' } })
-  const testShow2 = await db.Show.findOne({ where: { title: 'Joker Prueba', schedule: '17:00:00' } })
-  const testShow3 = await db.Show.findOne({ where: { title: 'Joker Prueba', schedule: '14:00:00' } })
-  const testShow4 = await db.Show.findOne({ where: { title: 'Joker Prueba', schedule: '11:00:00' } })
-  const testCinema7 = await db.Cinema.findOne({ where: { name: 'Cine Prueba 2' }})
-  const testCinema = await db.Cinema.findOne({ where: { name: 'Cine Prueba' }})
-  await testShow.destroy()
-  await testShow9.destroy()
-  await testCinema7.destroy()
-  await testShow2.destroy()
-  await testShow3.destroy()
-  await testShow4.destroy()
-
-  await testCinema.destroy()
-  await db.sequelize.close()
-})
+  } catch (error) {
+    console.error('Error en afterAll:', error);
+  }
+});
 
 
 describe("Movies", () => {
@@ -146,12 +150,12 @@ describe("Shows", () => {
       .post('/search')
       .send({
         "location": "Latitude: -33.417052, Longitude: -70.5100854",
-        "movie": "Batman Prueba 3",
+        "movie": "Batman Prueba",
         "currentLocation": true,
         "date": "2023-11-28"
     })
         expect(res.statusCode).toEqual(200)
-        expect(res.body).toEqual([ [], 'Batman Prueba 3' ])
+        expect(res.body).toEqual([ [], 'Batman Prueba' ])
     
   });
 
@@ -162,7 +166,7 @@ describe("Shows", () => {
         "location": "Latitude: -33.0000000, Longitude: -70.0000000",
         "movie": "Batman Prueba",
         "currentLocation": true,
-        "date": "2023-11-27"
+        "date": "2023-11-28"
     })
         expect(res.statusCode).toEqual(200)
         var json = JSON.parse(JSON.stringify(res.body[0]))

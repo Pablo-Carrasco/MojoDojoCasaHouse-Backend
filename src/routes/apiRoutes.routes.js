@@ -1,13 +1,13 @@
 const express = require("express");
 const axios = require('axios');
 const { exec } = require('child_process');
-const db = require("../src/config/db.js");
+const db = require("../config/db.js");
 
 const router = express.Router();
 
 router.get('/cinemas', async (req, res) => {
     try {
-      const cinemas = await db["Cinema"].findAll({
+      const cinemas = await db.Cinema.findAll({
         attributes: ['id','name'],
       });
   
@@ -27,7 +27,7 @@ try {
 
     //Implementar eliminar los datos de show en este punto antes de volver a correr los scrapers
 
-    db["Show"].destroy({
+    db.Show.destroy({
         where: {},
     }).then((filasBorradas) => {
     console.log(`Se borraron ${filasBorradas} filas`);
@@ -71,7 +71,7 @@ try {
     //Implementar la lógica para insertar los datos de la película en la base de datos
     
     movieData.map(async (movie) => {
-    await db["Show"].create({
+    await db.Show.create({
         title: movie.title,
         schedule: movie.schedule,
         link_to_show: movie.link_to_show,

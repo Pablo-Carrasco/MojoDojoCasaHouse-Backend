@@ -1,13 +1,15 @@
+require('dotenv').config();
 const app = require('./app');
-const routes = require('./routes');
-const apiRoutes = require('./apiRoutes');
+const db = require("./config/db")
 
-app.use('/', routes); // Rutas "/"
-app.use('/api', apiRoutes); // Rutas "/api"
-
-const server = app.listen(process.env.NODE_DOCKER_PORT, () => {
-  server.timeout = 0;
-  console.log(`Servidor en ejecución en puerto ${process.env.NODE_LOCAL_PORT}`);
-});
-
-module.exports = app;
+db.sequelize.authenticate()
+  .then(() => {
+    console.log('Connection has been established successfully.');
+    app.listen(process.env.NODE_LOCAL_PORT, () => {
+      console.log(`Servidor en ejecución en puerto ${process.env.NODE_LOCAL_PORT}`);
+    });
+  })
+  .catch(err => {
+    console.error('Unable to connect to the database:', err);
+  }
+);

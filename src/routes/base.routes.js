@@ -1,6 +1,6 @@
 const express = require("express");
-const db = require("../src/config/db.js");
-const DistanceCalculationsModule = require("./distanceCalculationsModule/distanceCalculationsModule.js");
+const db = require("../config/db.js");
+const DistanceCalculationsModule = require("../distanceCalculationsModule/distanceCalculationsModule.js");
 
 const router = express.Router();
 
@@ -10,7 +10,7 @@ router.get('/', (req, res) => {
 
 router.get('/movies', async (req, res) => {
 try {
-    const movies = await db["Show"].findAll({
+    const movies = await db.Show.findAll({
     attributes: ['title'],
     group: ['title'],
     });
@@ -26,13 +26,13 @@ try {
 
 router.get("/cinemas", async (req, res) => {
   //const result = await pool.query('SELECT name, ST_AsText(location) FROM cinemas')
-  const cinemas = await db["Cinema"].findAll();
+  const cinemas = await db.Cinema.findAll();
   res.send(cinemas);
 });
 
 router.get("/shows", async (req, res) => {
   //const result = await pool.query('SELECT name, ST_AsText(location) FROM cinemas')
-  const shows = await db["Show"].findAll();
+  const shows = await db.Show.findAll();
   res.send(shows);
 });
 
@@ -48,8 +48,8 @@ router.post('/search', async (req, res) => {
   var coord_y = parseFloat(split_location[1].replace('Longitude: ',''));
   point = { type: 'Point', coordinates: [coord_x,coord_y] };
 
-  const allCinemas = await db["Cinema"].findAll({ include: ["shows"]});
-  const allShowsWithMovie = await db["Show"].findAll({
+  const allCinemas = await db.Cinema.findAll({ include: ["shows"]});
+  const allShowsWithMovie = await db.Show.findAll({
      include: ["cinema"],
      where: {
       title: movie_name,
@@ -79,7 +79,7 @@ router.post('/movieInfo', async(req, res) => {
   const cinema_id = req.body.cinema_id;
   const movie_title = req.body.movie_title;
 
-  const complete_cinema_information = await db["Cinema"].findAll({
+  const complete_cinema_information = await db.Cinema.findAll({
     include: ["shows"],
     where: {
       id: cinema_id
@@ -99,7 +99,7 @@ router.post('/movieInfo', async(req, res) => {
   )
 
   try {
-    const cinema_information = await db["Cinema"].findAll({
+    const cinema_information = await db.Cinema.findAll({
       where: {
         id: cinema_id
       }

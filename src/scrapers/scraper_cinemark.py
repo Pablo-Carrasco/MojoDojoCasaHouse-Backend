@@ -15,7 +15,8 @@ def scraper_selenium_movies(url, region, cinema, id_cinema):
     chrome_options.add_argument('--ignore-certificate-errors')
     chrome_options.add_argument('--incognito')
 
-    driver = webdriver.Chrome(options=chrome_options)
+    chrome_driver_path = 'usr/local/bin/chromedriver'
+    driver = webdriver.Chrome(executable_path=chrome_driver_path, options=chrome_options)
 
     driver.get(url)
 

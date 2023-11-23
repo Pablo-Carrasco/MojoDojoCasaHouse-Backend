@@ -89,6 +89,8 @@ beforeAll(async () => {
 
 afterAll(async () => {
   try {
+    console.log(process.env.NODE_ENV)
+    console.log(process.env.PSQL_DATABASE_URL_TEST)
     console.log('Deleting data...');
     await Promise.all([
       db.Cinema.destroy({

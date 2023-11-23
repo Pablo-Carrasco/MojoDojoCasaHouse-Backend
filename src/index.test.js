@@ -50,7 +50,7 @@ describe("Shows", () => {
         "location": "Latitude: -33.417052, Longitude: -70.5100854",
         "movie": "Batman Prueba 3",
         "currentLocation": true,
-        "date": "2023-11-27"
+        "date": "2023-11-28"
     })
         expect(res.statusCode).toEqual(200)
         expect(res.body).toEqual([ [], 'Batman Prueba 3' ])
@@ -64,7 +64,7 @@ describe("Shows", () => {
         "location": "Latitude: -33.0000000, Longitude: -70.0000000",
         "movie": "Batman Prueba",
         "currentLocation": true,
-        "date": "2023-11-28"
+        "date": "2023-11-27"
     })
         expect(res.statusCode).toEqual(200)
         var json = JSON.parse(JSON.stringify(res.body[0]))

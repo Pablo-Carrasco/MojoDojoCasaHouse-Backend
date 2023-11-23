@@ -30,7 +30,7 @@ const pool = new pg.Pool({
 })
 
 app.use(cors({
-  origin: 'http://localhost:3000',
+  origin: `${process.env.SERVER}:3000`,
   credentials: true, // Habilita el envío de cookies y otros credenciales
 }));
 
@@ -58,7 +58,7 @@ app.get('/api/cinemas', async (req, res) => {
 app.post('/api/scrape', async (req, res) => {
     try {
       // Paso 1: Obtener la lista de cines
-      const { data: cinemasList } = await axios.get(`http://localhost:3000/api/cinemas/`);
+      const { data: cinemasList } = await axios.get(`${process.env.SERVER}:3000/api/cinemas/`);
 
       //Implementar eliminar los datos de show en este punto antes de volver a correr los scrapers
 
@@ -227,9 +227,9 @@ app.post('/movieInfo', async(req, res) => {
   }
 })
 
-const server = app.listen(process.env.NODE_DOCKER_PORT, () => {
+const server = app.listen(process.env.NODE_DOCKER_PORT, '0.0.0.0', () => {
     server.timeout = 0; // Desactiva el timeout (o establece un valor mayor)
-    console.log(`Servidor en ejecución en puerto ${process.env.NODE_LOCAL_PORT}`);
+    console.log(`Servidor en ejecución en http://0.0.0.0:${process.env.NODE_LOCAL_PORT}`);
   });
 
 // app.listen(process.env.NODE_DOCKER_PORT)

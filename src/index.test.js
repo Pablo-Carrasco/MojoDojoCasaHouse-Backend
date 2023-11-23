@@ -89,8 +89,6 @@ beforeAll(async () => {
 
 afterAll(async () => {
   try {
-    console.log(process.env.NODE_ENV)
-    console.log(process.env.PSQL_DATABASE_URL_TEST)
     console.log('Deleting data...');
     await Promise.all([
       db.Cinema.destroy({
@@ -168,7 +166,7 @@ describe("Shows", () => {
         "location": "Latitude: -33.0000000, Longitude: -70.0000000",
         "movie": "Batman Prueba",
         "currentLocation": true,
-        "date": "2023-11-28"
+        "date": "2023-11-27"
     })
         expect(res.statusCode).toEqual(200)
         var json = JSON.parse(JSON.stringify(res.body[0]))

@@ -9,19 +9,25 @@ var loc = Sequelize.fn('ST_GeomFromText', 'POINT(-33.0000000 -70.0000000)')
 beforeAll(async () => {
   db.sequelize.authenticate()
   // eslint-disable-next-line no-unused-vars
-  const testCinema = await db.Cinema.create({
+  var testCinema = null
+  try{
+    testCinema = await db.Cinema.create({
     name: 'Cine Prueba',
       location: loc,
       createdAt: new Date(),
       updatedAt: new Date(),
-      id: 4
+      id: 4000
   })
+  } catch (e) {
+    console.error(e)
+  }
+
   const testShow = await db.Show.create({
     title: "Batman Prueba",
       schedule: "12:00:00",
       link_to_show: "aaalink1",
       link_to_picture: "aaalink2",
-      id_cinema: 4,
+      id_cinema: 4000,
       createdAt: new Date(),
       updatedAt: new Date(),
       date: new Date("2023-11-27")

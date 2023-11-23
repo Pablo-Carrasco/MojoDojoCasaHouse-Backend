@@ -7,7 +7,7 @@
   "scripts": {
     "start": "nodemon ./src/index.js",
     "dev": "node ./src/index.js",
-    "test": "jest --forceExit --detectOpenHandles",
+     "test": "jest --forceExit --detectOpenHandles",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix"
   },

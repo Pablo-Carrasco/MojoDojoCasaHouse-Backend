@@ -8,10 +8,6 @@ const app = express();
 const routes = require('./routes/index');
 
 app.use(cors({
-  origin: 'http://localhost:3000',
-  credentials: true,
-},
-{
   origin: process.env.URL_FRONTEND_PRODUCTION,
   credentials: true,
 }));

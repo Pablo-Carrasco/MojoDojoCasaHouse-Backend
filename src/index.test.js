@@ -11,7 +11,7 @@ beforeAll(async () => {
   // eslint-disable-next-line no-unused-vars
   var testCinema = null
   try{
-    testCinema = await db.Cinema.create({
+    testCinema7 = await db.Cinema.create({
     name: 'Cine Prueba',
       location: loc,
       createdAt: new Date(),
@@ -21,7 +21,7 @@ beforeAll(async () => {
   } catch (e) {
     console.error(e)
   }
-  const testShow = await db.Show.create({
+  const testShow9 = await db.Show.create({
     title: "Batman Prueba",
       schedule: "12:00:00",
       link_to_show: "aaalink1",
@@ -64,13 +64,13 @@ beforeAll(async () => {
 })
 
 afterAll(async () => {
-  const testShow = await db.Show.findOne({ where: { title: 'Batman Prueba' } })
+  const testShow9 = await db.Show.findOne({ where: { title: 'Batman Prueba' } })
   const testShow2 = await db.Show.findOne({ where: { title: 'Joker Prueba', schedule: '17:00:00' } })
   const testShow3 = await db.Show.findOne({ where: { title: 'Joker Prueba', schedule: '14:00:00' } })
   const testShow4 = await db.Show.findOne({ where: { title: 'Joker Prueba', schedule: '11:00:00' } })
-  const testCinema = await db.Cinema.findOne({ where: { name: 'Cine Prueba' }})
-  await testShow.destroy()
-  await testCinema.destroy()
+  const testCinema7 = await db.Cinema.findOne({ where: { name: 'Cine Prueba' }})
+  await testShow9.destroy()
+  await testCinema7.destroy()
   await testShow2.destroy()
   await testShow3.destroy()
   await testShow4.destroy()

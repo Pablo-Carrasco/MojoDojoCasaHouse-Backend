@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require("express");
 const cors = require("cors");
 const pg = require("pg");
@@ -8,6 +9,10 @@ const routes = require('./routes/index');
 
 app.use(cors({
   origin: 'http://localhost:3000',
+  credentials: true,
+},
+{
+  origin: process.env.URL_FRONTEND_PRODUCTION,
   credentials: true,
 }));
 app.use(express.json({ limit: '10mb' }));

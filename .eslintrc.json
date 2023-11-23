@@ -10,5 +10,8 @@
     },
     "rules": {
         "no-unused-vars": "off"
-    }
+    },
+    "globals": {
+        "process": true
+      }
 }

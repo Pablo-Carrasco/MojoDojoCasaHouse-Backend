@@ -1,40 +1,47 @@
-/* eslint-disable no-undef */
 const { Sequelize } = require('sequelize');
+const CinemaModel = require('../models/cinema');
+const ShowModel = require('../models/show');
+
 require('dotenv').config();
 
-// eslint-disable-next-line no-undef
-//const sequelize = new Sequelize(process.env.PSQL_DATABASE_URL)
-const sequelize = new Sequelize(process.env.PSQL_DATABASE_URL_DEVELOPMENT, {
+// Asegúrate de que NODE_ENV está configurado correctamente antes de usarlo
+const environment = process.env.NODE_ENV || 'development';
+
+const sequelize = new Sequelize(process.env[`PSQL_DATABASE_URL_${environment.toUpperCase()}`], {
   dialect: 'postgres',
   protocol: 'postgres',
   dialectOptions: {
-    ssl: true
-  }, 
+    ssl: true,
+  },
 });
 
 const db = {};
 
-db.Sequelize = Sequelize;
-db.sequelize = sequelize;
+// Modelos
+db.Cinema = CinemaModel(sequelize, Sequelize.DataTypes);
+db.Show = ShowModel(sequelize, Sequelize.DataTypes);
 
+// Asociaciones
+Object.values(db).forEach((model) => {
+  if (model.associate) {
+    model.associate(db);
+  }
+});
+
+// Exportar el objeto sequelize
+db.sequelize = sequelize;
+db.Sequelize = Sequelize;
+
+// Prueba de conexión a la base de datos
 const testDbConnection = async () => {
   try {
     await sequelize.authenticate();
-    console.log("Connection has been established successfully.");
+    console.log('Connection has been established successfully.');
   } catch (error) {
-    console.error("Unable to connect to the database:", error);
+    console.error('Unable to connect to the database:', error);
   }
 };
 
 testDbConnection();
 
-db["Cinema"] = require("../models/cinema.js")(sequelize, Sequelize.DataTypes);
-db["Show"] = require("../models/show.js")(sequelize, Sequelize.DataTypes);
-
-Object.keys(db).forEach((modelName) => {
-  if (db[modelName].associate) {
-    db[modelName].associate(db)
-  }
-})
-
-module.exports = db
+module.exports = db;

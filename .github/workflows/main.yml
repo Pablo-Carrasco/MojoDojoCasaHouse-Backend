@@ -10,6 +10,8 @@ on:
       - master 
 env:
   PSQL_DATABASE_URL_DEVELOPMENT: ${{ secrets.PSQL_DATABASE_URL_DEVELOPMENT }}
+
+env.test:
   PSQL_DATABASE_URL_TEST: ${{ secrets.PSQL_DATABASE_URL_TEST }}
 
 jobs:

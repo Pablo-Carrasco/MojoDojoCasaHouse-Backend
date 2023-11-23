@@ -224,7 +224,4 @@ const server = app.listen(process.env.NODE_DOCKER_PORT, () => {
     console.log(`Servidor en ejecución en puerto ${process.env.NODE_LOCAL_PORT}`);
   });
 
-// app.listen(process.env.NODE_DOCKER_PORT)
-// console.log('Server on Port', process.env.NODE_LOCAL_PORT)
-
 module.exports = app;

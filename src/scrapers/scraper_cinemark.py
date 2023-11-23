@@ -1,5 +1,4 @@
 from selenium import webdriver
-from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
 from bs4 import BeautifulSoup
@@ -16,9 +15,7 @@ def scraper_selenium_movies(url, region, cinema, id_cinema):
     chrome_options.add_argument('--ignore-certificate-errors')
     chrome_options.add_argument('--incognito')
 
-    chrome_driver_path = 'usr/local/bin/chromedriver'
-    chrome_service = ChromeService(executable_path=chrome_driver_path)
-    driver = webdriver.Chrome(service=chrome_service, options=chrome_options)
+    driver = webdriver.Chrome(options=chrome_options)
 
     driver.get(url)
 

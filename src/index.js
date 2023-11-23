@@ -9,28 +9,14 @@ const axios = require('axios');
 
 const db = require("../src/config/db.js");
 
-const { DataTypes } = require("sequelize");
-
 const DistanceCalculationsModule = require("./distanceCalculationsModule/distanceCalculationsModule.js");
 
 require("dotenv").config();
 
 const app = express();
 
-const environment = process.env.NODE_ENV || "development";
-
-const databaseUrl =
-  environment === "production"
-    ? process.env.PSQL_DATABASE_URL
-    : `postgresql://${process.env.PSQL_DB_USER}:${process.env.PSQL_DB_PASSWORD}@${process.env.PSQL_DB_HOST}:${process.env.PSQL_DB_PORT}/${process.env.PSQL_DB_NAME}`;
-
-const pool = new pg.Pool({
-    connectionString: process.env.PSQL_DATABASE_URL,
-    ssl: true
-})
-
 app.use(cors({
-  origin: `${process.env.SERVER}:3000`,
+  origin: 'http://localhost:3000',
   credentials: true, // Habilita el envío de cookies y otros credenciales
 }));
 
@@ -58,7 +44,7 @@ app.get('/api/cinemas', async (req, res) => {
 app.post('/api/scrape', async (req, res) => {
     try {
       // Paso 1: Obtener la lista de cines
-      const { data: cinemasList } = await axios.get(`${process.env.SERVER}:3000/api/cinemas/`);
+      const { data: cinemasList } = await axios.get(`http://localhost:3000/api/cinemas/`);
 
       //Implementar eliminar los datos de show en este punto antes de volver a correr los scrapers
 
@@ -66,8 +52,8 @@ app.post('/api/scrape', async (req, res) => {
         new Promise((resolve, reject) => {
             const arrayCinemaName = cinema[1].split(' ');
             const chain = arrayCinemaName[0].toLowerCase();
-            if (chain == 'cinemark') {
-                exec(`python3 ./src/scrapers/scraper_${chain}.py "${cinema[1]}" ${cinema[0]}`, (error, stdout, stderr) => {
+            if (chain == 'cinemark' || chain == 'cp') {
+                exec(`python ./src/scrapers/scraper_${chain}.py "${cinema[1]}" ${cinema[0]}`, (error, stdout, stderr) => {
                     if (error) {
                     console.error(`Error: ${error.message}`);
                     reject(`Error al ejecutar el scraper para ${cinema[1]}`);
@@ -94,21 +80,19 @@ app.post('/api/scrape', async (req, res) => {
     try {
       const movieData = req.body;
   
-      console.log(movieData[0]);
+      //console.log(movieData);
       //Implementar la lógica para insertar los datos de la película en la base de datos
       
-    //   await db["Show"].bulkCreate(movieData);
-
-    //   movieData.map(async (movie) => {
-    //     await db["Show"].create({
-    //         title: movie.title,
-    //         schedule: movie.schedule,
-    //         link_to_show: movie.link_to_show,
-    //         link_to_picture: movie.link_to_picture,
-    //         id_cinema: movie.id_cinema,
-    //         date: new Date(movie.date),
-    //     });
-    //   });
+      movieData.map(async (movie) => {
+        await db["Show"].create({
+            title: movie.title,
+            schedule: movie.schedule,
+            link_to_show: movie.link_to_show,
+            link_to_picture: movie.link_to_picture,
+            id_cinema: movie.id_cinema,
+            date: new Date(movie.date),
+        });
+      });
     
       
       res.send('Datos de la película recibidos y almacenados correctamente');
@@ -227,9 +211,9 @@ app.post('/movieInfo', async(req, res) => {
   }
 })
 
-const server = app.listen(process.env.NODE_DOCKER_PORT, '0.0.0.0', () => {
+const server = app.listen(process.env.NODE_DOCKER_PORT, () => {
     server.timeout = 0; // Desactiva el timeout (o establece un valor mayor)
-    console.log(`Servidor en ejecución en http://0.0.0.0:${process.env.NODE_LOCAL_PORT}`);
+    console.log(`Servidor en ejecución en puerto ${process.env.NODE_LOCAL_PORT}`);
   });
 
 // app.listen(process.env.NODE_DOCKER_PORT)

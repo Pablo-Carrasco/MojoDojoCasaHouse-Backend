@@ -11,8 +11,32 @@ beforeAll(async () => {
   // eslint-disable-next-line no-unused-vars
   var testCinema = null
   try{
-    testCinema7 = await db.Cinema.create({
+    testCinema = await db.Cinema.create({
     name: 'Cine Prueba',
+      location: loc,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      id: 4000
+  })
+  } catch (e) {
+    console.error(e)
+  }
+
+  const testShow = await db.Show.create({
+    title: "Batman Prueba",
+      schedule: "12:00:00",
+      link_to_show: "aaalink1",
+      link_to_picture: "aaalink2",
+      id_cinema: 4000,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      date: new Date("2023-11-27")
+  })
+
+  var testCinema7 = null
+  try{
+    testCinema7 = await db.Cinema.create({
+    name: 'Cine Prueba 2',
       location: loc,
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -64,16 +88,20 @@ beforeAll(async () => {
 })
 
 afterAll(async () => {
+  const testShow = await db.Show.findOne({ where: { title: 'Batman Prueba' } })
   const testShow9 = await db.Show.findOne({ where: { title: 'Batman Prueba' } })
   const testShow2 = await db.Show.findOne({ where: { title: 'Joker Prueba', schedule: '17:00:00' } })
   const testShow3 = await db.Show.findOne({ where: { title: 'Joker Prueba', schedule: '14:00:00' } })
   const testShow4 = await db.Show.findOne({ where: { title: 'Joker Prueba', schedule: '11:00:00' } })
-  const testCinema7 = await db.Cinema.findOne({ where: { name: 'Cine Prueba' }})
+  const testCinema7 = await db.Cinema.findOne({ where: { name: 'Cine Prueba 2' }})
+  const testCinema = await db.Cinema.findOne({ where: { name: 'Cine Prueba' }})
+  await testShow.destroy()
   await testShow9.destroy()
   await testCinema7.destroy()
   await testShow2.destroy()
   await testShow3.destroy()
   await testShow4.destroy()
+  await testCinema.destroy()
   await db.sequelize.close()
 })
 
@@ -86,7 +114,6 @@ describe("Movies", () => {
         "movie_title": "Joker Prueba"
       })
         expect(res.statusCode).toEqual(200)
-        console.log(res.body.shows)
         expect(res.body.shows.length).toEqual(3)
         
   })

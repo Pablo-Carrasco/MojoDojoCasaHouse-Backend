@@ -4,7 +4,6 @@ const ShowModel = require('../models/show');
 
 require('dotenv').config();
 
-// Asegúrate de que NODE_ENV está configurado correctamente antes de usarlo
 const environment = process.env.NODE_ENV || 'development';
 
 const sequelize = new Sequelize(process.env[`PSQL_DATABASE_URL_${environment.toUpperCase()}`], {

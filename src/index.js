@@ -67,7 +67,7 @@ app.post('/api/scrape', async (req, res) => {
             const arrayCinemaName = cinema[1].split(' ');
             const chain = arrayCinemaName[0].toLowerCase();
             if (chain == 'cinemark') {
-                exec(`python ./src/scrapers/scraper_${chain}.py "${cinema[1]}" ${cinema[0]}`, (error, stdout, stderr) => {
+                exec(`python3 ./src/scrapers/scraper_${chain}.py "${cinema[1]}" ${cinema[0]}`, (error, stdout, stderr) => {
                     if (error) {
                     console.error(`Error: ${error.message}`);
                     reject(`Error al ejecutar el scraper para ${cinema[1]}`);
@@ -94,7 +94,7 @@ app.post('/api/scrape', async (req, res) => {
     try {
       const movieData = req.body;
   
-      console.log(movieData);
+      console.log(movieData[0]);
       //Implementar la lógica para insertar los datos de la película en la base de datos
       
     //   await db["Show"].bulkCreate(movieData);

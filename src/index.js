@@ -20,7 +20,7 @@ app.use(cors({
   credentials: true, // Habilita el envío de cookies y otros credenciales
 }));
 
-app.use(express.json());
+app.use(express.json({ limit: '10mb' }));
 
 app.get('/', (req, res) => {
     res.send('Hola mundo esto es una demo!')
@@ -47,6 +47,14 @@ app.post('/api/scrape', async (req, res) => {
       const { data: cinemasList } = await axios.get(`http://localhost:3000/api/cinemas/`);
 
       //Implementar eliminar los datos de show en este punto antes de volver a correr los scrapers
+
+      db["Show"].destroy({
+          where: {},
+      }).then((filasBorradas) => {
+        console.log(`Se borraron ${filasBorradas} filas`);
+      }).catch((error) => {
+        console.error('Error al borrar las filas:', error);
+      })
 
       const scraperPromises = cinemasList.map(cinema =>
         new Promise((resolve, reject) => {

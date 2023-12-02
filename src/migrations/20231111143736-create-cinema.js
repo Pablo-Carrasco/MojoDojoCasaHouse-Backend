@@ -12,6 +12,9 @@ module.exports = {
       name: {
         type: Sequelize.STRING
       },
+      chain: {
+        type: Sequelize.STRING
+      },
       location: {
         type: Sequelize.GEOMETRY('POINT')
       },

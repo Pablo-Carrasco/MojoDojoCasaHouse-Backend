@@ -106,6 +106,7 @@ def date_formatter(date):
     day_number = date_data[0]
     month_text = date_data[1]
     year = date_data[2]
+    month = ''
     if month_text == "JAN.":
         month = "01"
     elif month_text == "FEB.":
@@ -128,7 +129,7 @@ def date_formatter(date):
         month = "10"
     elif month_text == "NOV.":
         month = "11"
-    elif month_text == "DEC.":
+    elif month_text == "DIC.":
         month = "12"
     return f'{year}-{month}-{day_number}'
 

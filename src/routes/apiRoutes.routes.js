@@ -8,10 +8,10 @@ const router = express.Router();
 router.get('/cinemas', async (req, res) => {
     try {
       const cinemas = await db.Cinema.findAll({
-        attributes: ['id','name'],
+        attributes: ['id','name', 'chain'],
       });
   
-      const cinemaList = cinemas.map(cinema => [cinema.id, cinema.name]);
+      const cinemaList = cinemas.map(cinema => [cinema.id, cinema.name, cinema.chain]);
       
       res.json(cinemaList);
     } catch (error) {
@@ -37,9 +37,8 @@ try {
 
     const scraperPromises = cinemasList.map(cinema =>
     new Promise((resolve, reject) => {
-        const arrayCinemaName = cinema[1].split(' ');
-        const chain = arrayCinemaName[0].toLowerCase();
-        if (chain == 'cinemark' || chain == 'cp') {
+        const chain = cinema[2].toLowerCase();
+        if (chain == 'cm' || chain == 'ch' || chain == 'cp') {
             exec(`python ./src/scrapers/scraper_${chain}.py "${cinema[1]}" ${cinema[0]}`, (error, stdout, stderr) => {
                 if (error) {
                 console.error(`Error: ${error.message}`);

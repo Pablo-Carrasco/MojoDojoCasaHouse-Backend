@@ -1,6 +1,8 @@
 const express = require("express");
 const db = require("../config/db.js");
 const DistanceCalculationsModule = require("../distanceCalculationsModule/distanceCalculationsModule.js");
+const axios = require('axios');
+var stringSimilarity = require("string-similarity");
 
 const router = express.Router();
 
@@ -23,6 +25,37 @@ try {
     res.status(500).json({ error: 'Error interno del servidor' });
 }
 });
+
+async function getScores(title){
+  const { data: moviesList } = await axios.get(`http://localhost:3000/movies/`);
+  const scores = []
+  moviesList.forEach((movieTitle) => {
+    var info = {}
+    info["title"] = movieTitle
+    info["score"] = stringSimilarity.compareTwoStrings(movieTitle, title)
+    scores.push(info)
+  })
+  return scores
+}
+
+router.get('/modifyTitles', async (req, res) => {
+  const { data: moviesList } = await axios.get(`http://localhost:3000/movies/`);
+  console.log(moviesList)
+  var titlesToChange = {}
+
+  moviesList.forEach(async (title) => {
+    var scores = await getScores(title)
+    scores.sort(function(first, second) {
+      return second.score - first.score;
+    });
+    console.log(title)
+    console.log(scores[1])
+    //añadir que si un título incluye a otro score = 99%
+    //cambiar el nombre más corto por el más largo
+    //añadir en un diccionario: nombre anterior: nombre nuevo
+    //recorrer diccionario cambiando el nombre en Show de la bdd
+  })
+})
 
 router.get("/cinemas", async (req, res) => {
   //const result = await pool.query('SELECT name, ST_AsText(location) FROM cinemas')

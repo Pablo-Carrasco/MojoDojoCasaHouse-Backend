@@ -72,13 +72,13 @@ try {
     movieData.map(async (movie) => {
         let movie_title = movie.title;
         let title_exists = false;
-        // console.log(movie_title)
+        console.log(movie_title)
         moviesList.map(async (existing_title) => {
-            // console.log(existing_title, levenshtein.get(movie_title, existing_title))
+            console.log(existing_title, levenshtein.get(movie_title, existing_title))
             if (!title_exists) {
-                distance = levenshtein.get(movie_title, existing_title);
+                let distance = levenshtein.get(movie_title, existing_title);
                 if (distance <= 5) {
-                    // console.log(existing_title, distance);
+                    console.log(existing_title, distance);
                     movie_title = existing_title;
                     title_exists = true;
                     await db.Show.create({

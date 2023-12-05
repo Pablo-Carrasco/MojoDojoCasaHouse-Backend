@@ -32,10 +32,21 @@ async function getScores(title){
   moviesList.forEach((movieTitle) => {
     var info = {}
     info["title"] = movieTitle
-    info["score"] = stringSimilarity.compareTwoStrings(movieTitle, title)
+    if (movieTitle.includes(title) && title != movieTitle){
+      info["score"] = 0.99
+    } else {
+      info["score"] = stringSimilarity.compareTwoStrings(movieTitle, title)
+    }
     scores.push(info)
   })
   return scores
+}
+
+async function changeMovieNames(titlesToChange){
+  //TODO: resolver que se repiten las películas a cambiar
+  //cambiar el nombre más corto por el más largo
+  //recorrer diccionario cambiando el nombre en Show de la bdd
+  console.log(titlesToChange)
 }
 
 router.get('/modifyTitles', async (req, res) => {
@@ -43,18 +54,23 @@ router.get('/modifyTitles', async (req, res) => {
   console.log(moviesList)
   var titlesToChange = {}
 
-  moviesList.forEach(async (title) => {
+  await moviesList.forEach(async (title) => {
     var scores = await getScores(title)
     scores.sort(function(first, second) {
       return second.score - first.score;
     });
     console.log(title)
     console.log(scores[1])
-    //añadir que si un título incluye a otro score = 99%
-    //cambiar el nombre más corto por el más largo
-    //añadir en un diccionario: nombre anterior: nombre nuevo
-    //recorrer diccionario cambiando el nombre en Show de la bdd
+
+    if (scores[1].score > 0.5){
+      titlesToChange[title] = scores[1].title
+    }
+    
+    changeMovieNames(titlesToChange)
+
   })
+  
+  
 })
 
 router.get("/cinemas", async (req, res) => {

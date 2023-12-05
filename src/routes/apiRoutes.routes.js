@@ -2,6 +2,7 @@ const express = require("express");
 const axios = require('axios');
 const { exec } = require('child_process');
 const db = require("../config/db.js");
+const levenshtein = require('fast-levenshtein');
 
 const router = express.Router();
 
@@ -62,22 +63,50 @@ try {
 }
 });
 
+
 router.post('/movies', async (req, res) => {
 try {
     const movieData = req.body;
-
-    //console.log(movieData);
-    //Implementar la lógica para insertar los datos de la película en la base de datos
+    const { data: moviesList } = await axios.get(`http://localhost:3000/movies/`);
     
     movieData.map(async (movie) => {
-    await db.Show.create({
-        title: movie.title,
-        schedule: movie.schedule,
-        link_to_show: movie.link_to_show,
-        link_to_picture: movie.link_to_picture,
-        id_cinema: movie.id_cinema,
-        date: new Date(movie.date),
-    });
+        let movie_title = movie.title;
+        let title_exists = false;
+        // console.log(movie_title)
+        moviesList.map(async (existing_title) => {
+            // console.log(existing_title, levenshtein.get(movie_title, existing_title))
+            if (!title_exists) {
+                distance = levenshtein.get(movie_title, existing_title);
+                if (distance <= 5) {
+                    // console.log(existing_title, distance);
+                    movie_title = existing_title;
+                    title_exists = true;
+                    await db.Show.create({
+                        title: movie_title,
+                        schedule: movie.schedule,
+                        link_to_show: movie.link_to_show,
+                        link_to_picture: movie.link_to_picture,
+                        id_cinema: movie.id_cinema,
+                        date: new Date(movie.date),
+                    });
+                }
+            }
+
+            if (title_exists) {
+                return;
+            }
+            
+        });
+        if (!title_exists) {
+            await db.Show.create({
+                title: movie.title,
+                schedule: movie.schedule,
+                link_to_show: movie.link_to_show,
+                link_to_picture: movie.link_to_picture,
+                id_cinema: movie.id_cinema,
+                date: new Date(movie.date),
+            });
+        }
     });
 
     

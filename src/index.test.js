@@ -84,6 +84,26 @@ beforeAll(async () => {
       updatedAt: new Date(),
       date: new Date("2023-11-29")
   })
+  const testShow41 = await db.Show.create({
+    title: "LOS JUEGOS DEL HAMBRE: BALADA DE PÁJAROS CANTORES Y SERPIENTES prueba",
+      schedule: "11:00:00",
+      link_to_show: "aaalink1",
+      link_to_picture: "aaalink2",
+      id_cinema: 5000,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      date: new Date("2023-11-29")
+  })
+  const testShow42 = await db.Show.create({
+    title: "LJDH BALADA DE PAJAROS Y SERPIENTES prueba",
+      schedule: "13:00:00",
+      link_to_show: "aaalink1",
+      link_to_picture: "aaalink2",
+      id_cinema: 5000,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      date: new Date("2023-11-29")
+  })
 
 })
 
@@ -101,7 +121,7 @@ afterAll(async () => {
       db.Show.destroy({
         where: {
           title: {
-            [db.Sequelize.Op.or]: ['Batman Prueba', 'Joker Prueba']
+            [db.Sequelize.Op.or]: ['Batman Prueba', 'Joker Prueba', 'LJDH BALADA DE PAJAROS Y SERPIENTES prueba', 'LOS JUEGOS DEL HAMBRE: BALADA DE PÁJAROS CANTORES Y SERPIENTES prueba']
           }
         }
       })
@@ -188,6 +208,16 @@ describe("Shows", () => {
         expect(res.body[1]).toEqual('Batman Prueba')
         expect(res.body[0]).toEqual([])
   });
+  it ("test-changeShorterNamesForLonger", async () => {
+    const response = await request(app).get('/modifyTitles');
+    const shows = await db.Show.findAll({
+      where:
+      {
+        title: 'LOS JUEGOS DEL HAMBRE: BALADA DE PÁJAROS CANTORES Y SERPIENTES prueba'
+      }
+    });
+    expect(shows.length).toEqual(2)
+  })
 
 })
 

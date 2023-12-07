@@ -27,7 +27,7 @@ try {
 });
 
 async function getScores(title){
-  const { data: moviesList } = await axios.get(`http://localhost:3000/movies/`);
+  const { data: moviesList } = await axios.get(`http://localhost:8000/movies/`);
   const scores = []
   moviesList.forEach((movieTitle) => {
     var info = {}
@@ -43,15 +43,21 @@ async function getScores(title){
 }
 
 async function changeMovieNames(titlesToChange){
-  //TODO: resolver que se repiten las películas a cambiar
-  //cambiar el nombre más corto por el más largo
-  //recorrer diccionario cambiando el nombre en Show de la bdd
-  console.log(titlesToChange)
+  Object.keys(titlesToChange).forEach(async (titleToChange) => {
+    var shows = await db.Show.findAll({
+      where: {
+        title: titleToChange
+      }
+    })
+    shows.forEach(async (show) => {
+      show.title = titlesToChange[titleToChange];
+      await show.save()
+    })
+  })
 }
 
-router.get('/modifyTitles', async (req, res) => {
-  const { data: moviesList } = await axios.get(`http://localhost:3000/movies/`);
-  console.log(moviesList)
+async function getTitlesToChange(){
+  const { data: moviesList } = await axios.get(`http://localhost:8000/movies/`);
   var titlesToChange = {}
 
   await moviesList.forEach(async (title) => {
@@ -59,18 +65,20 @@ router.get('/modifyTitles', async (req, res) => {
     scores.sort(function(first, second) {
       return second.score - first.score;
     });
-    console.log(title)
-    console.log(scores[1])
 
-    if (scores[1].score > 0.5){
+    if (scores[1].score > 0.5 && !Object.keys(titlesToChange).includes(scores[1].title)){
       titlesToChange[title] = scores[1].title
     }
-    
-    changeMovieNames(titlesToChange)
 
+    console.log(titlesToChange)
+    await changeMovieNames(titlesToChange) //esto tiene que ir afuera del forEach 
+    
   })
-  
-  
+  //await changeMovieNames(titlesToChange); //esto tiene que ir afuera del forEach 
+}
+
+router.get('/modifyTitles', async (req, res) => {
+  await getTitlesToChange()
 })
 
 router.get("/cinemas", async (req, res) => {

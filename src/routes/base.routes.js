@@ -27,7 +27,7 @@ try {
 });
 
 async function getScores(title){
-  const { data: moviesList } = await axios.get(`http://localhost:8000/movies/`);
+  const { data: moviesList } = await axios.get(`http://localhost:3000/movies/`);
   const scores = []
   moviesList.forEach((movieTitle) => {
     var info = {}
@@ -57,10 +57,10 @@ async function changeMovieNames(titlesToChange){
 }
 
 async function getTitlesToChange(){
-  const { data: moviesList } = await axios.get(`http://localhost:8000/movies/`);
+  const { data: moviesList } = await axios.get(`http://localhost:3000/movies/`);
   var titlesToChange = {}
 
-  await moviesList.forEach(async (title) => {
+  await Promise.all(moviesList.map(async (title) => {
     var scores = await getScores(title)
     scores.sort(function(first, second) {
       return second.score - first.score;
@@ -70,11 +70,10 @@ async function getTitlesToChange(){
       titlesToChange[title] = scores[1].title
     }
 
-    console.log(titlesToChange)
-    await changeMovieNames(titlesToChange) //esto tiene que ir afuera del forEach 
     
-  })
-  //await changeMovieNames(titlesToChange); //esto tiene que ir afuera del forEach 
+  }));
+  // console.log(titlesToChange)
+  await changeMovieNames(titlesToChange);
 }
 
 router.get('/modifyTitles', async (req, res) => {

@@ -7,7 +7,7 @@
   "scripts": {
     "start": "nodemon ./src/index.js",
     "dev": "node ./src/index.js",
-    "test": "jest --forceExit",
+     "test": "NODE_ENV=test jest --forceExit --detectOpenHandles",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix"
   },
@@ -15,6 +15,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "axios": "^1.6.2",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
     "eslint": "^8.52.0",

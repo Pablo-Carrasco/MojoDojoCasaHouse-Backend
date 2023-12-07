@@ -32,6 +32,8 @@ jobs:
       run: npm install
 
     - name: Run tests
+      env:
+        PSQL_DATABASE_URL_TEST: ${{ secrets.PSQL_DATABASE_URL_TEST }}
       run: npm run test
 
     - name: Run linter

@@ -8,9 +8,10 @@ const app = express();
 const routes = require('./routes/index');
 
 app.use(cors({
-  origin: process.env.URL_FRONTEND_PRODUCTION,
+  origin: [process.env.URL_FRONTEND_PRODUCTION, process.env.URL_FRONTEND_DEVELOPMENT, 'http://localhost:3000'],
   credentials: true,
 }));
+
 app.use(express.json({ limit: '10mb' }));
 app.use(routes)
 

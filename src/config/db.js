@@ -1,6 +1,7 @@
 const { Sequelize } = require('sequelize');
 const CinemaModel = require('../models/cinema');
 const ShowModel = require('../models/show');
+const AdminModel = require('../models/admin')
 
 require('dotenv').config();
 
@@ -19,6 +20,7 @@ const db = {};
 // Modelos
 db.Cinema = CinemaModel(sequelize, Sequelize.DataTypes);
 db.Show = ShowModel(sequelize, Sequelize.DataTypes);
+db.Admin = AdminModel(sequelize, Sequelize.DataTypes)
 
 // Asociaciones
 Object.values(db).forEach((model) => {

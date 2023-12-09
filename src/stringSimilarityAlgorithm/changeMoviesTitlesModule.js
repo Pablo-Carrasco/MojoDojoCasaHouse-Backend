@@ -20,19 +20,19 @@ function getScores(title, moviesList){
 async function changeMovieNames(titlesToChange, db){
   var shows = null;
   if (db){
-    Object.keys(titlesToChange).forEach(async (titleToChange) => {
+    await Promise.all(Object.keys(titlesToChange).map(async (titleToChange) => {
     shows = await db.Show.findAll({
       where: {
         title: titleToChange
       }
     })
-    shows.forEach((show) => {
+    await shows.map(async (show) => {
       show.title = titlesToChange[titleToChange];
-      //await show.save()
+      await show.save()
     })
-  })
+  }))
+  return shows;
   }
-  return shows
 }
 
 module.exports = { getScores, changeMovieNames };

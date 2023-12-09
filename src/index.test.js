@@ -195,7 +195,6 @@ describe("Shows", () => {
         expect(res.statusCode).toEqual(200)
         var json = JSON.parse(JSON.stringify(res.body[0]))
         expect(res.body[1]).toEqual('Batman Prueba')
-        console.log(json[0])
         expect(json[0].name).toEqual('Cine Prueba') 
   });
   it("test-NoShowsWithDate", async () => {
@@ -221,15 +220,16 @@ describe("Shows", () => {
     expect(scores2[1].score).toBeGreaterThan(0.5)
   });
   it ("test-changeNames", async () => {
-    const movieList = ["LJDH: BALADA DE PAJAROS CANTORES Y SERPIENTES", "LOS JUEGOS DEL HAMBRE: BALADA DE PÁJAROS CANTORES Y SERPIENTES", "WONKA", "WILLY WONKA Y LA FÁBRICA DE CHOCOLATES"]
-    const titlesToChange = {"LJDH: BALADA DE PAJAROS CANTORES Y SERPIENTES": "LOS JUEGOS DEL HAMBRE: BALADA DE PÁJAROS CANTORES Y SERPIENTES", "WONKA" : "WILLY WONKA Y LA FÁBRICA DE CHOCOLATES"}
-    const updatedShows = changeMovieNames(titlesToChange, movieList)
-    //console.log(updatedShows)
-    expect(updatedShows[0].name).toEqual("LOS JUEGOS DEL HAMBRE: BALADA DE PÁJAROS CANTORES Y SERPIENTES")
-    expect(updatedShows[1].name).toEqual("LOS JUEGOS DEL HAMBRE: BALADA DE PÁJAROS CANTORES Y SERPIENTES")
-    expect(updatedShows[2].name).toEqual("WILLY WONKA Y LA FÁBRICA DE CHOCOLATES")
-    expect(updatedShows[3].name).toEqual("WILLY WONKA Y LA FÁBRICA DE CHOCOLATES")
-  })
+    const titlesToChange = {"LJDH BALADA DE PAJAROS Y SERPIENTES prueba": "LOS JUEGOS DEL HAMBRE: BALADA DE PÁJAROS CANTORES Y SERPIENTES prueba"}
+    const updatedShows = await changeMovieNames(titlesToChange, db);
+    var counter = 0;
+    updatedShows.forEach((show) => {
+      if (show.title == "LJDH BALADA DE PAJAROS Y SERPIENTES prueba"){
+        counter ++;
+      }
+    })
+    expect(counter).toEqual(0)
+  });
 
 })
 

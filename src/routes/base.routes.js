@@ -40,10 +40,7 @@ async function getTitlesToChange(){
       titlesToChange[title] = scores[1].title
     }
   }));
-  var updatedShows = await changeMovieNames(titlesToChange, db);
-  updatedShows.forEach(async (show) => {
-    await show.save()
-  })
+  await changeMovieNames(titlesToChange, db);
 }
 
 router.get('/modifyTitles', async (req, res) => {

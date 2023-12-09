@@ -17,8 +17,7 @@ beforeAll(async () => {
       address: adrs,
       createdAt: new Date(),
       updatedAt: new Date(),
-      id: 4000,
-      address: adrs
+      id: 4000
   })
   } catch (e) {
     console.error(e)
@@ -44,8 +43,7 @@ beforeAll(async () => {
       address: adrs,
       createdAt: new Date(),
       updatedAt: new Date(),
-      id: 5000,
-      address: adrs
+      id: 5000
   })
   } catch (e) {
     console.error(e)

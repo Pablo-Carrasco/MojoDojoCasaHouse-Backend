@@ -2,7 +2,7 @@ const express = require("express");
 const db = require("../config/db.js");
 const DistanceCalculationsModule = require("../distanceCalculationsModule/distanceCalculationsModule.js");
 const axios = require('axios');
-const { getScores } = require("../stringSimilarityAlgorithm/changeMoviesTitlesModule.js")
+const { getScores, changeMovieNames } = require("../stringSimilarityAlgorithm/changeMoviesTitlesModule.js")
 
 const router = express.Router();
 
@@ -26,20 +26,6 @@ try {
 }
 });
 
-async function changeMovieNames(titlesToChange){
-  Object.keys(titlesToChange).forEach(async (titleToChange) => {
-    var shows = await db.Show.findAll({
-      where: {
-        title: titleToChange
-      }
-    })
-    shows.forEach(async (show) => {
-      show.title = titlesToChange[titleToChange];
-      await show.save()
-    })
-  })
-}
-
 async function getTitlesToChange(){
   const { data: moviesList } = await axios.get(`http://localhost:3000/movies/`);
   var titlesToChange = {}
@@ -54,7 +40,10 @@ async function getTitlesToChange(){
       titlesToChange[title] = scores[1].title
     }
   }));
-  await changeMovieNames(titlesToChange);
+  var updatedShows = await changeMovieNames(titlesToChange, db);
+  updatedShows.forEach(async (show) => {
+    await show.save()
+  })
 }
 
 router.get('/modifyTitles', async (req, res) => {

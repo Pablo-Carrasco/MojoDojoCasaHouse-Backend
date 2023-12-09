@@ -17,4 +17,22 @@ function getScores(title, moviesList){
   return scores
 }
 
-module.exports = { getScores };
+async function changeMovieNames(titlesToChange, db){
+  var shows = null;
+  if (db){
+    Object.keys(titlesToChange).forEach(async (titleToChange) => {
+    shows = await db.Show.findAll({
+      where: {
+        title: titleToChange
+      }
+    })
+    shows.forEach((show) => {
+      show.title = titlesToChange[titleToChange];
+      //await show.save()
+    })
+  })
+  }
+  return shows
+}
+
+module.exports = { getScores, changeMovieNames };

@@ -14,6 +14,7 @@ beforeAll(async () => {
     testCinema = await db.Cinema.create({
     name: 'Cine Prueba',
       location: loc,
+      address: adrs,
       createdAt: new Date(),
       updatedAt: new Date(),
       id: 4000,
@@ -40,6 +41,7 @@ beforeAll(async () => {
     testCinema7 = await db.Cinema.create({
     name: 'Cine Prueba 2',
       location: loc,
+      address: adrs,
       createdAt: new Date(),
       updatedAt: new Date(),
       id: 5000,

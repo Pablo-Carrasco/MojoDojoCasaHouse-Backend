@@ -2,7 +2,7 @@ const express = require("express");
 const db = require("../config/db.js");
 const DistanceCalculationsModule = require("../distanceCalculationsModule/distanceCalculationsModule.js");
 const axios = require('axios');
-var stringSimilarity = require("string-similarity");
+const { getScores } = require("../stringSimilarityAlgorithm/changeMoviesTitlesModule.js")
 
 const router = express.Router();
 
@@ -26,22 +26,6 @@ try {
 }
 });
 
-async function getScores(title){
-  const { data: moviesList } = await axios.get(`http://localhost:3000/movies/`);
-  const scores = []
-  moviesList.forEach((movieTitle) => {
-    var info = {}
-    info["title"] = movieTitle
-    if (movieTitle.includes(title) && title != movieTitle){
-      info["score"] = 0.99
-    } else {
-      info["score"] = stringSimilarity.compareTwoStrings(movieTitle, title)
-    }
-    scores.push(info)
-  })
-  return scores
-}
-
 async function changeMovieNames(titlesToChange){
   Object.keys(titlesToChange).forEach(async (titleToChange) => {
     var shows = await db.Show.findAll({
@@ -61,7 +45,7 @@ async function getTitlesToChange(){
   var titlesToChange = {}
 
   await Promise.all(moviesList.map(async (title) => {
-    var scores = await getScores(title)
+    var scores = getScores(title, moviesList)
     scores.sort(function(first, second) {
       return second.score - first.score;
     });
@@ -69,10 +53,7 @@ async function getTitlesToChange(){
     if (scores[1].score > 0.5 && !Object.keys(titlesToChange).includes(scores[1].title)){
       titlesToChange[title] = scores[1].title
     }
-
-    
   }));
-  // console.log(titlesToChange)
   await changeMovieNames(titlesToChange);
 }
 

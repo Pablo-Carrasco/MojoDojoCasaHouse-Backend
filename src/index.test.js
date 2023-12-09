@@ -3,8 +3,10 @@ require('dotenv').config();
 const app = require('./app');
 const db = require("./config/db.js")
 const { Sequelize } = require('sequelize');
+const { getScores } = require("../src/stringSimilarityAlgorithm/changeMoviesTitlesModule.js")
 
 var loc = Sequelize.fn('ST_GeomFromText', 'POINT(-33.0000000 -70.0000000)')
+var adrs = 'Av. Prueba 123'
 
 beforeAll(async () => {
   var testCinema = null
@@ -14,7 +16,8 @@ beforeAll(async () => {
       location: loc,
       createdAt: new Date(),
       updatedAt: new Date(),
-      id: 4000
+      id: 4000,
+      address: adrs
   })
   } catch (e) {
     console.error(e)
@@ -39,7 +42,8 @@ beforeAll(async () => {
       location: loc,
       createdAt: new Date(),
       updatedAt: new Date(),
-      id: 5000
+      id: 5000,
+      address: adrs
   })
   } catch (e) {
     console.error(e)
@@ -208,16 +212,14 @@ describe("Shows", () => {
         expect(res.body[1]).toEqual('Batman Prueba')
         expect(res.body[0]).toEqual([])
   });
-  it ("test-changeShorterNamesForLonger", async () => {
-    const response = await request(app).get('/modifyTitles');
-    const shows = await db.Show.findAll({
-      where:
-      {
-        title: 'LOS JUEGOS DEL HAMBRE: BALADA DE PÁJAROS CANTORES Y SERPIENTES prueba'
-      }
-    });
-    expect(shows.length).toEqual(2)
-  })
+  it ("test-getScores", async () => {
+    const movieList = ["LJDH: BALADA DE PAJAROS CANTORES Y SERPIENTES", "LOS JUEGOS DEL HAMBRE: BALADA DE PÁJAROS CANTORES Y SERPIENTES", "WONKA", "WILLY WONKA Y LA FÁBRICA DE CHOCOLATES"]
+    var scores1 = getScores("WONKA", movieList)
+    var scores2 = getScores("LJDH: BALADA DE PAJAROS CANTORES Y SERPIENTES", movieList)
+    expect(scores1[2].score).toEqual(1)
+    expect(scores1[3].score).toEqual(0.99)
+    expect(scores2[1].score).toBeGreaterThan(0.5)
+  });
 
 })
 

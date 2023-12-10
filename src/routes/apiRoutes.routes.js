@@ -38,7 +38,7 @@ try {
     const scraperPromises = cinemasList.map(cinema =>
     new Promise((resolve, reject) => {
         const chain = cinema[2].toLowerCase();
-        if (chain == 'ch' || chain == 'cm') {
+        if (chain == 'ch' || chain == 'cm' || chain == 'cp') {
             exec(`python ./src/scrapers/scraper_${chain}.py "${cinema[1]}" ${cinema[0]}`, (error, stdout, stderr) => {
                 if (error) {
                 console.error(`Error: ${error.message}`);

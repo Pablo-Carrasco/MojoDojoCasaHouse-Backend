@@ -3,6 +3,7 @@ require('dotenv').config();
 const app = require('./app');
 const db = require("./config/db.js")
 const { Sequelize } = require('sequelize');
+const { getScores, changeMovieNames } = require("../src/stringSimilarityAlgorithm/changeMoviesTitlesModule.js")
 
 var loc = Sequelize.fn('ST_GeomFromText', 'POINT(-33.0000000 -70.0000000)')
 var adrs = 'Av. Prueba 123'
@@ -87,6 +88,26 @@ beforeAll(async () => {
       updatedAt: new Date(),
       date: new Date("2023-11-29")
   })
+  const testShow41 = await db.Show.create({
+    title: "LOS JUEGOS DEL HAMBRE: BALADA DE PÁJAROS CANTORES Y SERPIENTES prueba",
+      schedule: "11:00:00",
+      link_to_show: "aaalink1",
+      link_to_picture: "aaalink2",
+      id_cinema: 5000,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      date: new Date("2023-11-29")
+  })
+  const testShow42 = await db.Show.create({
+    title: "LJDH BALADA DE PAJAROS Y SERPIENTES prueba",
+      schedule: "13:00:00",
+      link_to_show: "aaalink1",
+      link_to_picture: "aaalink2",
+      id_cinema: 5000,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      date: new Date("2023-11-29")
+  })
 
 })
 
@@ -104,7 +125,7 @@ afterAll(async () => {
       db.Show.destroy({
         where: {
           title: {
-            [db.Sequelize.Op.or]: ['Batman Prueba', 'Joker Prueba']
+            [db.Sequelize.Op.or]: ['Batman Prueba', 'Joker Prueba', 'LJDH BALADA DE PAJAROS Y SERPIENTES prueba', 'LOS JUEGOS DEL HAMBRE: BALADA DE PÁJAROS CANTORES Y SERPIENTES prueba']
           }
         }
       })
@@ -174,7 +195,6 @@ describe("Shows", () => {
         expect(res.statusCode).toEqual(200)
         var json = JSON.parse(JSON.stringify(res.body[0]))
         expect(res.body[1]).toEqual('Batman Prueba')
-        console.log(json[0])
         expect(json[0].name).toEqual('Cine Prueba') 
   });
   it("test-NoShowsWithDate", async () => {
@@ -190,6 +210,25 @@ describe("Shows", () => {
         var json = JSON.parse(JSON.stringify(res.body[0]))
         expect(res.body[1]).toEqual('Batman Prueba')
         expect(res.body[0]).toEqual([])
+  });
+  it ("test-getScores", async () => {
+    const movieList = ["LJDH: BALADA DE PAJAROS CANTORES Y SERPIENTES", "LOS JUEGOS DEL HAMBRE: BALADA DE PÁJAROS CANTORES Y SERPIENTES", "WONKA", "WILLY WONKA Y LA FÁBRICA DE CHOCOLATES"]
+    var scores1 = getScores("WONKA", movieList)
+    var scores2 = getScores("LJDH: BALADA DE PAJAROS CANTORES Y SERPIENTES", movieList)
+    expect(scores1[2].score).toEqual(1)
+    expect(scores1[3].score).toEqual(0.99)
+    expect(scores2[1].score).toBeGreaterThan(0.5)
+  });
+  it ("test-changeNames", async () => {
+    const titlesToChange = {"LJDH BALADA DE PAJAROS Y SERPIENTES prueba": "LOS JUEGOS DEL HAMBRE: BALADA DE PÁJAROS CANTORES Y SERPIENTES prueba"}
+    const updatedShows = await changeMovieNames(titlesToChange, db);
+    var counter = 0;
+    updatedShows.forEach((show) => {
+      if (show.title == "LJDH BALADA DE PAJAROS Y SERPIENTES prueba"){
+        counter ++;
+      }
+    })
+    expect(counter).toEqual(0)
   });
 
 })

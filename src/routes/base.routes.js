@@ -1,6 +1,8 @@
 const express = require("express");
 const db = require("../config/db.js");
 const DistanceCalculationsModule = require("../distanceCalculationsModule/distanceCalculationsModule.js");
+const axios = require('axios');
+const { getScores, changeMovieNames } = require("../stringSimilarityAlgorithm/changeMoviesTitlesModule.js")
 
 const router = express.Router();
 
@@ -23,6 +25,27 @@ try {
     res.status(500).json({ error: 'Error interno del servidor' });
 }
 });
+
+async function getTitlesToChange(){
+  const { data: moviesList } = await axios.get(`http://localhost:3000/movies/`);
+  var titlesToChange = {}
+
+  await Promise.all(moviesList.map(async (title) => {
+    var scores = getScores(title, moviesList)
+    scores.sort(function(first, second) {
+      return second.score - first.score;
+    });
+
+    if (scores[1].score > 0.5 && !Object.keys(titlesToChange).includes(scores[1].title)){
+      titlesToChange[title] = scores[1].title
+    }
+  }));
+  await changeMovieNames(titlesToChange, db);
+}
+
+router.get('/modifyTitles', async (req, res) => {
+  await getTitlesToChange()
+})
 
 router.get("/cinemas", async (req, res) => {
   //const result = await pool.query('SELECT name, ST_AsText(location) FROM cinemas')

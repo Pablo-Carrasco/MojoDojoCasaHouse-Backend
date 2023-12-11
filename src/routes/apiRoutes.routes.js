@@ -8,10 +8,10 @@ const router = express.Router();
 router.get('/cinemas', async (req, res) => {
     try {
       const cinemas = await db.Cinema.findAll({
-        attributes: ['id','name'],
+        attributes: ['id','name', 'chain'],
       });
   
-      const cinemaList = cinemas.map(cinema => [cinema.id, cinema.name]);
+      const cinemaList = cinemas.map(cinema => [cinema.id, cinema.name, cinema.chain]);
       
       res.json(cinemaList);
     } catch (error) {
@@ -37,9 +37,8 @@ try {
 
     const scraperPromises = cinemasList.map(cinema =>
     new Promise((resolve, reject) => {
-        const arrayCinemaName = cinema[1].split(' ');
-        const chain = arrayCinemaName[0].toLowerCase();
-        if (chain == 'cinemark' || chain == 'cp') {
+        const chain = cinema[2].toLowerCase();
+        if (chain == 'ch' || chain == 'cm' || chain == 'cp') {
             exec(`python ./src/scrapers/scraper_${chain}.py "${cinema[1]}" ${cinema[0]}`, (error, stdout, stderr) => {
                 if (error) {
                 console.error(`Error: ${error.message}`);
@@ -56,6 +55,8 @@ try {
     // Espera a que todas las ejecuciones asincrónicas se completen
     await Promise.all(scraperPromises);
 
+    await axios.get(`http://localhost:3000/modifyTitles/`);
+
 //   res.send(`Scraper ejecutado para todos los cines de exitosamente`);
 } catch (error) {
     console.error('Error al obtener la lista de cines:', error.message);
@@ -63,22 +64,21 @@ try {
 }
 });
 
+
 router.post('/movies', async (req, res) => {
 try {
     const movieData = req.body;
+    // const { data: moviesList } = await axios.get(`http://localhost:3000/movies/`);
 
-    //console.log(movieData);
-    //Implementar la lógica para insertar los datos de la película en la base de datos
-    
     movieData.map(async (movie) => {
-    await db.Show.create({
-        title: movie.title,
-        schedule: movie.schedule,
-        link_to_show: movie.link_to_show,
-        link_to_picture: movie.link_to_picture,
-        id_cinema: movie.id_cinema,
-        date: new Date(movie.date),
-    });
+        await db.Show.create({
+            title: movie.title,
+            schedule: movie.schedule,
+            link_to_show: movie.link_to_show,
+            link_to_picture: movie.link_to_picture,
+            id_cinema: movie.id_cinema,
+            date: new Date(movie.date),
+        });
     });
 
     

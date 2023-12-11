@@ -18,7 +18,9 @@ module.exports = (sequelize, DataTypes) => {
   }
   Cinema.init({
     name: DataTypes.STRING,
-    location: DataTypes.GEOMETRY('POINT')
+    chain: DataTypes.STRING,
+    location: DataTypes.GEOMETRY('POINT'),
+    address: DataTypes.STRING,
   }, {
     sequelize,
     modelName: 'Cinema',

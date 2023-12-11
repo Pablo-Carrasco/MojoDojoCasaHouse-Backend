@@ -6,10 +6,6 @@ const { getScores, changeMovieNames } = require("../stringSimilarityAlgorithm/ch
 
 const router = express.Router();
 
-router.get('/', (req, res) => {
-  res.send('Hola mundo esto es una demo!');
-});
-
 router.get('/movies', async (req, res) => {
 try {
     const movies = await db.Show.findAll({

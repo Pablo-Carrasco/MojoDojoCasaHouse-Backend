@@ -55,7 +55,7 @@ module.exports = {
     {
       name: 'Cinépolis Mallplaza Egaña Premium Class',
       chain: 'CH',
-      location: Sequelize.fn('ST_GeomFromText', 'POINT(-33.45248656962951 -70.57037394327618)'),
+      location: Sequelize.fn('ST_GeomFromText', 'POINT(-33.451650 -70.568673)'),
       address:'Av. Larraín 5862, La Reina',
       createdAt: new Date(),
       updatedAt: new Date()
@@ -71,7 +71,7 @@ module.exports = {
     {
       name: 'Cinépolis Mallplaza Los Dominicos Premium Class',
       chain: 'CH',
-      location: Sequelize.fn('ST_GeomFromText', 'POINT(-33.41508169946311 -70.5412874083331)'),
+      location: Sequelize.fn('ST_GeomFromText', 'POINT(-33.41607525204595 -70.53948493981886)'),
       address:'Av. Padre Hurtado Sur 875, Las Condes',
       createdAt: new Date(),
       updatedAt: new Date()
@@ -95,7 +95,7 @@ module.exports = {
     {
       name: 'Parque Arauco Premium Class',
       chain: 'CH',
-      location: Sequelize.fn('ST_GeomFromText', 'POINT(-33.40188793771994 -70.57858716010362)'),
+      location: Sequelize.fn('ST_GeomFromText', 'POINT(-33.402139 -70.576377)'),
       address:'Av. Pdte. Kennedy 5413, Las Condes',
       createdAt: new Date(),
       updatedAt: new Date()
